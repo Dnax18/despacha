@@ -1198,3 +1198,81 @@ a {
   color: var(--tinta-suave);
   font-size: 0.85rem;
 }
+
+/* ============================================================
+   Móvil (celular real, PWA instalada) — ajustes de orden y
+   espaciado encontrados al usar la app instalada en un teléfono.
+   Es un breakpoint más angosto que el de arriba (900px, pensado
+   para tablet): este solo reordena filas, no toca escritorio.
+   ============================================================ */
+@media (max-width: 600px) {
+  /* Header: logo+nombre a la izquierda y selector de rol a la
+     derecha en la misma fila; búsqueda y menú de navegación bajan
+     a su propia fila completa, en ese orden. flex-basis: 100% es
+     lo que obliga a un elemento a ocupar toda la línea y empujar
+     todo lo siguiente a la fila de abajo. */
+  .barra-superior.pos-barra {
+    flex-wrap: wrap;
+  }
+
+  .barra-superior.pos-barra .barra-superior__marca {
+    order: 1;
+  }
+
+  .barra-superior.pos-barra .pos-barra__derecha {
+    order: 2;
+  }
+
+  .barra-superior.pos-barra .pos-barra__busqueda {
+    order: 3;
+    flex-basis: 100%;
+    max-width: none;
+  }
+
+  .barra-superior.pos-barra .barra-nav {
+    order: 4;
+    flex-basis: 100%;
+  }
+
+  /* Excepción index.html (selección de rol): ahí el header no tiene
+     rol/búsqueda/menú (no existen en ese HTML), solo el logo+nombre,
+     y aquí lo centramos en vez de dejarlo pegado a la izquierda. */
+  .barra-superior:not(.pos-barra) {
+    justify-content: center;
+  }
+
+  /* Esconder la barra de scroll del menú de navegación sin perder
+     el deslizamiento horizontal: el scroll sigue funcionando, solo
+     deja de dibujarse la barrita. */
+  .barra-nav {
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .barra-nav::-webkit-scrollbar {
+    display: none; /* Chrome/Safari/Edge/WebView de la PWA */
+  }
+
+  /* POS — categorías: en pantallas angostas el botón circular se
+     veía como una "v" suelta sin contexto (borde casi invisible).
+     Lo agrandamos a una pastilla con borde de marca bien marcado,
+     para que se note que es un control y no un símbolo flotando. */
+  .categorias {
+    padding: 10px 16px;
+  }
+
+  .categorias__toggle {
+    width: auto;
+    height: 38px;
+    padding: 0 16px;
+    border-radius: 999px;
+    border: 1.5px solid var(--marca);
+    background-color: var(--superficie);
+    font-size: 1.1rem;
+  }
+
+  /* POS — grid de productos: 2 columnas fijas en vez de que
+     auto-fill decida cuántas caben (a veces dejaba 1 sola). */
+  .grid-productos {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
