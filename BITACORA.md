@@ -92,5 +92,15 @@ Revisado y corregido en celular (390px) y laptop angosta (1280px), usando Chromi
 
 ## 6. Control de versiones
 
-- Repositorio git local: [pendiente de inicializar / inicializado el 2026-06-22 — actualizar esta línea].
-- Repo remoto en GitHub: pendiente de crear y subir (lo hace el usuario).
+- Repositorio git local: inicializado el 2026-06-22, primer commit hecho (26 archivos).
+- Repo remoto en GitHub: pendiente de crear y subir (lo hace el usuario — ver instrucciones abajo).
+
+### Cómo subirlo a GitHub (lo que falta hacer)
+
+1. Crear un repositorio vacío en GitHub.com (sin README, sin .gitignore — ya existen aquí).
+2. En esta carpeta, correr:
+   ```
+   git remote add origin https://github.com/TU-USUARIO/NOMBRE-DEL-REPO.git
+   git branch -M main
+   git push -u origin main
+   ```
