@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Despacha — Selección de rol</title>
+
+  <!-- Lo que vuelve a Despacha una PWA instalable: el manifest le
+       dice al navegador el nombre, los íconos y el color de la app;
+       theme-color pinta la barra del sistema (la del notch/reloj en
+       el celular) del verde de marca en vez del blanco por defecto. -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0f5132" />
+  <!-- apple-touch-icon es aparte del manifest porque Safari/iOS no
+       lee el ícono del manifest para "Agregar a inicio": solo respeta
+       esta etiqueta específica. -->
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+
+  <!-- Inter es la tipografía que pide el documento de diseño (tiene
+       números tabulares, clave para un POS donde los precios deben
+       alinearse perfecto en columna). La cargamos de Google Fonts
+       porque no usamos frameworks, pero un link de fuente sigue
+       siendo solo HTML/CSS estándar. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="css/estilos.css" />
+</head>
+<body>
+  <header class="barra-superior">
+    <div class="barra-superior__marca">
+      <span class="barra-superior__logo">D</span>
+      <span data-nombre-negocio>Despacha</span>
+    </div>
+  </header>
+
+  <main class="pantalla-seleccion">
+    <h1 class="pantalla-seleccion__titulo">¿Quién va a usar Despacha?</h1>
+    <p class="pantalla-seleccion__subtitulo">Elige tu rol para empezar.</p>
+
+    <div class="tarjetas-rol">
+      <!-- data-rol guarda el valor que leerá inicio.js con
+           tarjeta.dataset.rol. Usamos botones reales (no divs) para
+           que sean accesibles por teclado y lectores de pantalla sin
+           trabajo extra: un <button> ya es enfocable y "clickeable"
+           con Enter/Espacio por defecto del navegador. -->
+      <button class="tarjeta-rol" type="button" data-rol="mostrador">
+        <span class="tarjeta-rol__icono">🧾</span>
+        <span class="tarjeta-rol__nombre">Mostrador</span>
+        <span class="tarjeta-rol__descripcion">Cobrar y registrar ventas</span>
+      </button>
+
+      <button class="tarjeta-rol" type="button" data-rol="dueño">
+        <span class="tarjeta-rol__icono">📊</span>
+        <span class="tarjeta-rol__nombre">Dueño</span>
+        <span class="tarjeta-rol__descripcion">Todo, más dashboard y reportes</span>
+      </button>
+    </div>
+  </main>
+
+  <!-- type="module" permite usar import/export entre archivos JS sin
+       herramientas de build. Los módulos además se ejecutan después de
+       que el HTML termina de parsear, así que no necesitamos "defer". -->
+  <script type="module" src="js/inicio.js"></script>
+  <script type="module" src="js/registro-pwa.js"></script>
+</body>
+</html>

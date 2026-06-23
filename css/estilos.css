@@ -1,0 +1,1200 @@
+/* ============================================================
+   estilos.css — Sistema de diseño de Despacha
+   Todos los valores salen de DISENO_DESPACHA.md. No se improvisa
+   ningún color ni tamaño aquí: si algo no está en ese documento,
+   se deriva de algo que sí está (ej: una sombra "suave" coherente
+   con el resto, aunque el documento no diera el valor exacto en px).
+   ============================================================ */
+
+:root {
+  /* --- Paleta (sección 1 del documento de diseño) --- */
+  --marca: #0f5132; /* Verde profundo — color de marca, CAMBIABLE por cliente */
+  --marca-claro: #157347; /* variante para hovers/estados */
+  --accion: #7cb342; /* Verde lima — botones de cobrar/confirmar */
+  --fondo: #fafaf7; /* Blanco hueso — fondo, descansa la vista */
+  --superficie: #ffffff; /* tarjetas, paneles */
+  --tinta: #1a1f1d; /* texto y números */
+  --tinta-suave: #5c6661; /* texto secundario, etiquetas */
+  --aviso: #f5a623; /* ámbar — stock bajo, merma */
+  --critico: #d64545; /* rojo — eliminar, pérdida */
+  --linea: #e8e8e2; /* bordes, divisores */
+
+  /* --- Valores derivados, reutilizados por todos los módulos --- */
+  --radio: 12px; /* border-radius medio: "limpio y amable", sin esquinas duras */
+  --sombra-suave: 0 2px 10px rgba(26, 31, 29, 0.08);
+  --fuente: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* Reset mínimo: cada navegador trae sus propios márgenes/paddings por
+   defecto en body, h1, etc. Sin esto, el mismo diseño se vería distinto
+   en cada navegador. */
+* {
+  box-sizing: border-box;
+}
+
+body,
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+body {
+  font-family: var(--fuente);
+  background-color: var(--fondo);
+  color: var(--tinta);
+  /* Números tabulares (sección 2 del diseño): en un POS los números son
+     el producto, así que deben alinearse en columna perfecta y no
+     "bailar" de ancho entre dígito y dígito. */
+  font-feature-settings: "tnum";
+  min-height: 100vh;
+}
+
+/* Quita el subrayado/azul por defecto de los links que usemos como
+   botones o navegación dentro de la app. */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* --- Accesibilidad: foco de teclado visible (piso de calidad, sección 7) ---
+   Sin esto, alguien que navega con Tab (no con mouse/dedo) no vería
+   dónde está parado. El verde de marca como contorno es suficiente
+   contraste sobre el fondo claro. */
+:focus-visible {
+  outline: 3px solid var(--marca-claro);
+  outline-offset: 2px;
+}
+
+/* Respeta "reduced motion" (piso de calidad, sección 7): algunas
+   personas configuran su sistema para evitar animaciones porque les
+   causan mareo o distracción. Esta regla apaga casi toda transición
+   para quien lo pidió, sin que tengamos que duplicar estilos. */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ============================================================
+   Barra superior (compartida entre pantallas)
+   ============================================================ */
+.barra-superior {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background-color: var(--superficie);
+  border-bottom: 1px solid var(--linea);
+}
+
+.barra-superior__marca {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  color: var(--marca);
+  font-size: 1.1rem;
+}
+
+.barra-superior__logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background-color: var(--marca);
+  /* Mientras no hay logo real del cliente, mostramos un cuadrito con
+     la inicial del negocio: comunica "aquí va tu logo" sin verse roto. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--superficie);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   Pantalla de selección de rol (index.html)
+   ============================================================ */
+.pantalla-seleccion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 65px); /* resta el alto aprox. de la barra superior */
+  padding: 24px;
+  text-align: center;
+}
+
+.pantalla-seleccion__titulo {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.pantalla-seleccion__subtitulo {
+  color: var(--tinta-suave);
+  margin-bottom: 32px;
+}
+
+.tarjetas-rol {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Cada botón de rol es grande y tocable (piso de calidad: pensado para
+   dedo en tablet, no solo cursor de mouse). */
+.tarjeta-rol {
+  width: 220px;
+  padding: 32px 20px;
+  background-color: var(--superficie);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra-suave);
+  cursor: pointer;
+  font-family: var(--fuente);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.tarjeta-rol:hover {
+  border-color: var(--marca);
+  transform: translateY(-2px);
+}
+
+.tarjeta-rol__icono {
+  font-size: 2.5rem;
+}
+
+.tarjeta-rol__nombre {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--tinta);
+}
+
+.tarjeta-rol__descripcion {
+  font-size: 0.85rem;
+  color: var(--tinta-suave);
+}
+
+.boton-secundario {
+  display: inline-block;
+  margin-top: 24px;
+  padding: 12px 24px;
+  border-radius: var(--radio);
+  border: 1px solid var(--linea);
+  background-color: var(--fondo);
+  color: var(--tinta);
+  font-family: var(--fuente);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.boton-secundario--en-linea {
+  margin-top: 0;
+}
+
+.boton-secundario:hover {
+  border-color: var(--marca);
+}
+
+/* ============================================================
+   POS — barra superior (búsqueda + rol + reloj)
+   ============================================================ */
+.pos-barra {
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.pos-barra__busqueda {
+  flex: 1;
+  min-width: 200px;
+  max-width: 420px;
+  padding: 10px 14px;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  font-family: var(--fuente);
+  font-size: 0.95rem;
+  background-color: var(--fondo);
+}
+
+.pos-barra__derecha {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 0.9rem;
+  color: var(--tinta-suave);
+}
+
+.pos-barra__rol {
+  font-weight: 700;
+  color: var(--tinta);
+}
+
+.pos-barra__cambiar-rol {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: var(--fuente);
+  font-size: 0.85rem;
+  color: var(--marca);
+  text-decoration: underline;
+}
+
+/* ============================================================
+   POS — barra de categorías
+   ============================================================ */
+.categorias {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  background-color: var(--superficie);
+  border-bottom: 1px solid var(--linea);
+  flex-wrap: wrap;
+}
+
+.categorias__lista {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.categorias__lista[hidden] {
+  display: none;
+}
+
+.categoria-boton {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--linea);
+  background-color: var(--fondo);
+  color: var(--tinta-suave);
+  font-family: var(--fuente);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.categoria-boton:hover {
+  border-color: var(--marca);
+}
+
+.categoria-boton[aria-pressed="true"] {
+  background-color: var(--marca);
+  border-color: var(--marca);
+  color: var(--superficie);
+}
+
+.categorias__toggle {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border: 1px solid var(--linea);
+  border-radius: 50%;
+  background-color: var(--fondo);
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--tinta-suave);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* La flechita gira 180° cuando las categorías están colapsadas, para
+     que "se note" que cambió de estado aunque sea un botón chiquito.
+     Sin esto, el clic se sentía como que "no hacía nada" aunque sí
+     escondía las categorías. */
+  transition: transform 0.15s ease;
+}
+
+.categorias__toggle:hover {
+  border-color: var(--marca);
+}
+
+.categorias__toggle[aria-expanded="false"] {
+  transform: rotate(-90deg);
+}
+
+/* ============================================================
+   POS — layout principal: grid de productos + ticket
+   ============================================================ */
+.pos-layout {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  align-items: flex-start;
+}
+
+.grid-productos {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 14px;
+}
+
+.tarjeta-producto {
+  background-color: var(--superficie);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra-suave);
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-family: var(--fuente);
+  text-align: center;
+  /* min-height alto: pensado para tocarse con el dedo, no solo con
+     un cursor de mouse preciso (piso de calidad del diseño). */
+  min-height: 130px;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.tarjeta-producto:hover {
+  border-color: var(--marca);
+  transform: translateY(-2px);
+}
+
+.tarjeta-producto__icono {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  /* color-mix mezcla dos colores ya definidos arriba: así cada
+     categoría tiene su propio acento sin inventar colores nuevos
+     fuera de la paleta del documento de diseño. */
+  background-color: color-mix(in srgb, var(--icono-categoria, var(--marca)) 18%, white);
+}
+
+.tarjeta-producto__nombre {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.tarjeta-producto__precio {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.tarjeta-producto__unidad {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--tinta-suave);
+}
+
+.pos-layout__sin-resultados {
+  color: var(--tinta-suave);
+  padding: 40px;
+  text-align: center;
+  width: 100%;
+}
+
+/* ============================================================
+   POS — ticket actual
+   ============================================================ */
+.ticket {
+  width: 320px;
+  flex-shrink: 0;
+  background-color: var(--superficie);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra-suave);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  /* "sticky" hace que el ticket se quede visible mientras se hace
+     scroll en el grid de productos, en vez de perderse arriba. */
+  position: sticky;
+  top: 20px;
+}
+
+.ticket h2 {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.ticket__encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Oculto por defecto (escritorio): el ticket siempre se ve completo
+   ahí, no hace falta colapsarlo. La media query de celular más abajo
+   lo vuelve visible. */
+.ticket__toggle-movil {
+  display: none;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--linea);
+  border-radius: 50%;
+  background-color: var(--fondo);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.ticket__toggle-movil[aria-expanded="false"] {
+  transform: rotate(-90deg);
+}
+
+/* [hidden] ya hace display:none por defecto del navegador; esta regla
+   es solo para que quede explícito y no dependa de un comportamiento
+   "implícito" del HTML que alguien podría no conocer. */
+[data-ticket-contenido][hidden] {
+  display: none;
+}
+
+.ticket-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.ticket-linea {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--linea);
+}
+
+.ticket-linea__info {
+  display: flex;
+  flex-direction: column;
+}
+
+.ticket-linea__nombre {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.ticket-linea__cantidad {
+  font-size: 0.8rem;
+  color: var(--tinta-suave);
+}
+
+/* Input de cantidad dentro del modal de editar venta: chico a propósito,
+   solo necesita caber 3-4 dígitos, no todo el ancho de la línea. */
+.campo-cantidad-linea {
+  width: 64px;
+  padding: 4px 6px;
+  border: 1px solid var(--linea);
+  border-radius: 6px;
+  font-family: var(--fuente);
+  font-size: 0.8rem;
+  font-feature-settings: "tnum";
+}
+
+.ticket-linea__derecha {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ticket-linea__subtotal {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+/* Botón destructivo (sección 5 del diseño): rojo, reservado SOLO para
+   eliminar o merma. Aquí se usa para quitar una línea del ticket. */
+.boton-eliminar-linea {
+  border: none;
+  background: none;
+  color: var(--critico);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 4px;
+  line-height: 1;
+}
+
+.ticket-vacio {
+  color: var(--tinta-suave);
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 24px 0;
+}
+
+.ticket-vacio[hidden] {
+  display: none;
+}
+
+.ticket-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-top: 8px;
+  border-top: 1px solid var(--linea);
+}
+
+.ticket-total-row span {
+  color: var(--tinta-suave);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}
+
+/* El total a cobrar es el número más grande de la pantalla (sección 2
+   del diseño): es lo único que de verdad le importa al mostrador. */
+.ticket-total-row strong {
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+
+/* Botón primario (sección 5): lima, grande, el más visible de la
+   pantalla. "Cobrar" es el caso principal, pero el mismo tratamiento
+   sirve para cualquier acción afirmativa importante (ej: "Agregar
+   producto" en el catálogo) — por eso esta regla aplica a las dos
+   clases en vez de duplicar el bloque completo. */
+.boton-cobrar,
+.boton-primario {
+  padding: 16px;
+  border: none;
+  border-radius: var(--radio);
+  background-color: var(--accion);
+  color: var(--tinta);
+  font-family: var(--fuente);
+  font-size: 1.1rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: var(--sombra-suave);
+  /* Transición corta para que el hover de abajo se sienta suave y no
+     como un cambio brusco de color. prefers-reduced-motion (arriba en
+     este archivo) la desactiva para quien la pidió. */
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+/* brightness(0.93) oscurece el lima un poco al pasar el mouse: misma
+   idea que el hover de marca-claro en los demás botones, pero como
+   --accion ya es un solo verde (no tiene una variante "clara" propia
+   en la paleta), oscurecerlo un poco basta para dar feedback. */
+.boton-cobrar:not(:disabled):hover,
+.boton-primario:not(:disabled):hover {
+  filter: brightness(0.93);
+}
+
+.boton-cobrar:disabled,
+.boton-primario:disabled {
+  background-color: var(--linea);
+  color: var(--tinta-suave);
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   Overlays / modales (teclado de peso y panel de cobro)
+   ============================================================ */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(26, 31, 29, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 10;
+}
+
+.overlay[hidden] {
+  display: none;
+}
+
+.modal {
+  background-color: var(--superficie);
+  border-radius: var(--radio);
+  padding: 24px;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: var(--sombra-suave);
+}
+
+.modal__titulo {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.modal__subtitulo {
+  color: var(--tinta-suave);
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+}
+
+/* Elemento de firma del diseño (sección 4): pantalla grande y clara
+   con el cálculo en vivo precio/kg × kg = subtotal. */
+.modal__pantalla {
+  background-color: var(--fondo);
+  border-radius: var(--radio);
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.modal__pantalla-cifra {
+  font-size: 2rem;
+  font-weight: 800;
+  font-feature-settings: "tnum";
+}
+
+.modal__pantalla-detalle {
+  font-size: 0.85rem;
+  color: var(--tinta-suave);
+  margin-top: 4px;
+}
+
+/* Ámbar (--aviso): "avisa sin alarmar" según el documento de diseño.
+   Falta dinero todavía, pero no es un error grave como --critico. */
+.modal__pantalla-detalle--aviso {
+  color: var(--aviso);
+  font-weight: 700;
+}
+
+.modal__modo {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.modal__modo button {
+  flex: 1;
+  padding: 8px;
+  border-radius: var(--radio);
+  border: 1px solid var(--linea);
+  background-color: var(--fondo);
+  font-family: var(--fuente);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.modal__modo button[aria-pressed="true"] {
+  background-color: var(--marca);
+  border-color: var(--marca);
+  color: var(--superficie);
+}
+
+/* Teclado numérico (sección 5): teclas grandes, fáciles de tocar. */
+.teclado-numerico {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.teclado-numerico button {
+  padding: 16px 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  background-color: var(--fondo);
+  cursor: pointer;
+  font-family: var(--fuente);
+}
+
+.teclado-numerico button:hover {
+  border-color: var(--marca);
+}
+
+.modal__error {
+  color: var(--critico);
+  font-size: 0.85rem;
+  margin-bottom: 12px;
+  min-height: 1.2em;
+}
+
+.modal__acciones {
+  display: flex;
+  gap: 10px;
+}
+
+.modal__acciones .boton-cobrar,
+.modal__acciones .boton-primario,
+.modal__acciones .boton-eliminar {
+  flex: 1;
+}
+
+.modal__acciones .boton-secundario {
+  flex: 1;
+  margin-top: 0;
+  text-align: center;
+}
+
+/* Panel de cobro: elegir método de pago */
+/* Grupo de botones tipo "pastilla" donde solo uno está activo a la
+   vez (aria-pressed="true"). Se reutiliza para elegir método de pago,
+   y también para el periodo del dashboard (Hoy / Semana / Mes). */
+.metodo-pago,
+.selector-pildoras {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.metodo-pago button,
+.selector-pildoras button {
+  flex: 1;
+  padding: 12px;
+  border-radius: var(--radio);
+  border: 1px solid var(--linea);
+  background-color: var(--fondo);
+  font-family: var(--fuente);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.metodo-pago button:not([aria-pressed="true"]):hover,
+.selector-pildoras button:not([aria-pressed="true"]):hover {
+  border-color: var(--marca);
+}
+
+.metodo-pago button[aria-pressed="true"],
+.selector-pildoras button[aria-pressed="true"] {
+  background-color: var(--marca);
+  border-color: var(--marca);
+  color: var(--superficie);
+}
+
+.campo-recibido {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  font-family: var(--fuente);
+  font-size: 1.2rem;
+  font-feature-settings: "tnum";
+  margin-bottom: 12px;
+  text-align: right;
+}
+
+/* ============================================================
+   Confirmación "Venta guardada" (sección 8 del diseño: el botón
+   Cobrar produce confirmación, no un mensaje gratis sin contexto)
+   ============================================================ */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--marca);
+  color: var(--superficie);
+  padding: 14px 24px;
+  border-radius: var(--radio);
+  box-shadow: var(--sombra-suave);
+  font-weight: 600;
+  z-index: 20;
+}
+
+.toast--error {
+  background-color: var(--critico);
+}
+
+.toast[hidden] {
+  display: none;
+}
+
+/* ============================================================
+   Responsive (piso de calidad, sección 7: hasta celular)
+   El ticket pasa de columna lateral a panel apilado debajo del
+   grid, fijo en la parte inferior para que siga siendo accesible
+   sin tener que hacer scroll hasta arriba.
+   ============================================================ */
+@media (max-width: 900px) {
+  .pos-layout {
+    flex-direction: column;
+    /* Deja un hueco abajo del tamaño aprox. del ticket colapsado, para
+       que la última fila de productos no quede tapada de forma
+       permanente por la barra fija (sección 3 del diseño: "el ticket
+       pasa a una barra inferior desplegable"). */
+    padding-bottom: 90px;
+  }
+
+  .ticket {
+    /* "fixed" (no "sticky"): así el ticket vive pegado a la ventana
+       siempre, sin importar cuánto se haya scrolleado el grid de
+       productos. Con "sticky" se alcanzaba a ver tapando productos
+       desde el primer momento, antes de que hubiera scroll de por
+       qué "pegarse". */
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    top: auto;
+    border-radius: var(--radio) var(--radio) 0 0;
+    max-height: 70vh;
+    overflow-y: auto;
+    z-index: 15;
+  }
+
+  .ticket__toggle-movil {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ticket-lista {
+    max-height: 160px;
+  }
+}
+
+/* ============================================================
+   Navegación entre pantallas (barra superior)
+   ============================================================ */
+.barra-nav {
+  display: flex;
+  gap: 4px;
+  background-color: var(--fondo);
+  border-radius: 999px;
+  padding: 4px;
+  /* En pantallas angostas los 5 links no caben en una sola fila. En
+     vez de que se corten fuera de la pantalla (lo que pasaba antes),
+     dejamos que esta franja se deslice horizontalmente con el dedo,
+     como las pestañas de una app de celular. min-width:0 es necesario
+     para que un hijo de flexbox SÍ pueda encogerse por debajo de su
+     ancho natural; sin eso, el navegador lo ignora y desborda igual. */
+  overflow-x: auto;
+  min-width: 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.barra-nav a {
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--tinta-suave);
+  transition: color 0.15s ease, background-color 0.15s ease;
+  /* Sin esto, un link de dos palabras ("Esta semana"-style, o aquí
+     "Catálogo") podría partirse en dos líneas dentro del scroll
+     horizontal, lo cual se ve mal en una franja de una sola fila. */
+  white-space: nowrap;
+}
+
+.barra-nav a:hover {
+  color: var(--tinta);
+}
+
+/* aria-current="page" marca el link de la pantalla en la que ya
+   estás: así no hace falta duplicar la lógica en JS para resaltarlo. */
+.barra-nav a[aria-current="page"] {
+  background-color: var(--marca);
+  color: var(--superficie);
+}
+
+/* ============================================================
+   Catálogo de productos (catalogo.html)
+   ============================================================ */
+.catalogo {
+  max-width: 1100px;
+  margin: 24px auto;
+  padding: 0 24px;
+}
+
+.catalogo__encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+
+.catalogo__encabezado--separado {
+  margin-top: 40px;
+}
+
+.catalogo__encabezado h1 {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+/* Las tablas (catálogo, inventario, histórico) tienen más columnas de
+   las que caben en un celular. En vez de achicar el texto hasta que ya
+   no se lea, dejamos que la tabla se deslice horizontalmente dentro de
+   esta franja, mientras el resto de la página no se mueve. */
+.tabla-scroll {
+  overflow-x: auto;
+  /* overflow-y: hidden (no "auto") es lo que deja que las esquinas
+     redondeadas de la tabla se vean limpias, sin agregar una barra de
+     scroll vertical que no necesitamos aquí. */
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  border-radius: var(--radio);
+  box-shadow: var(--sombra-suave);
+}
+
+.tabla-catalogo {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--superficie);
+}
+
+.tabla-catalogo th,
+.tabla-catalogo td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--linea);
+  font-size: 0.9rem;
+}
+
+.tabla-catalogo th {
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  color: var(--tinta-suave);
+  background-color: var(--fondo);
+}
+
+.tabla-catalogo tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.tabla-catalogo td.celda-numero {
+  font-feature-settings: "tnum";
+  font-weight: 600;
+}
+
+.etiqueta-tipo {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  background-color: var(--linea);
+  color: var(--tinta-suave);
+}
+
+/* Ámbar (--aviso): marca que esa venta ya no cuenta como ingreso, sin
+   verse tan grave como el rojo --critico (no es un error del sistema,
+   es solo un estado informativo de esa fila). */
+.etiqueta-reembolso {
+  background-color: color-mix(in srgb, var(--aviso) 20%, white);
+  color: var(--aviso);
+  font-weight: 700;
+}
+
+/* Una venta reembolsada se ve "apagada": sigue siendo legible (no
+   quitamos la información), pero a simple vista se nota que ya no es
+   una venta activa. */
+.fila-reembolsada td {
+  color: var(--tinta-suave);
+}
+
+.catalogo__acciones-fila {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.boton-editar {
+  border: 1px solid var(--linea);
+  background-color: var(--fondo);
+  border-radius: var(--radio);
+  padding: 6px 12px;
+  font-family: var(--fuente);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.boton-editar:hover {
+  border-color: var(--marca);
+}
+
+/* Botón destructivo (sección 5): rojo, solo para eliminar. */
+.boton-eliminar {
+  border: 1px solid var(--critico);
+  background-color: var(--superficie);
+  color: var(--critico);
+  border-radius: var(--radio);
+  padding: 6px 12px;
+  font-family: var(--fuente);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.boton-eliminar:hover {
+  background-color: var(--critico);
+  color: var(--superficie);
+}
+
+/* Confirmación inline antes de borrar, en vez de un diálogo nativo del
+   navegador (que no se puede tematizar y se ve fuera de lugar). */
+.confirmar-eliminar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--tinta-suave);
+}
+
+.confirmar-eliminar button {
+  border: none;
+  background: none;
+  font-family: var(--fuente);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.confirmar-eliminar [data-confirmar-si] {
+  color: var(--critico);
+}
+
+.catalogo__vacio {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--tinta-suave);
+}
+
+/* En pantallas con varias secciones apiladas (ej: inventario.html
+   tiene tres: stock, entradas y mermas), el padding grande de arriba
+   se ve bien para LA lista principal, pero deja huecos enormes en las
+   secundarias. Este modificador las deja compactas. */
+.catalogo__vacio--compacto {
+  padding: 16px 20px;
+  text-align: left;
+}
+
+/* ============================================================
+   Modal de producto (agregar / editar) — reutiliza .modal y
+   .modal__error definidos para el POS.
+   ============================================================ */
+.modal--ancho {
+  max-width: 420px;
+}
+
+.campo {
+  margin-bottom: 14px;
+}
+
+.campo label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--tinta-suave);
+  margin-bottom: 6px;
+}
+
+.campo input,
+.campo select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  font-family: var(--fuente);
+  font-size: 0.95rem;
+}
+
+.campo-radios {
+  display: flex;
+  gap: 16px;
+}
+
+.campo-radios label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  color: var(--tinta);
+  margin-bottom: 0;
+}
+
+/* ============================================================
+   Dashboard (dashboard.html)
+   ============================================================ */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.dashboard-card {
+  background-color: var(--superficie);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra-suave);
+  padding: 20px;
+}
+
+.dashboard-card__etiqueta {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--tinta-suave);
+  margin-bottom: 8px;
+}
+
+/* Los números del dashboard son el dato que de verdad le importa al
+   dueño: por eso van grandes, igual que el total del ticket en el POS. */
+.dashboard-card__cifra {
+  font-size: 1.8rem;
+  font-weight: 800;
+  font-feature-settings: "tnum";
+}
+
+.dashboard-card__detalle {
+  font-size: 0.85rem;
+  color: var(--tinta-suave);
+  margin-top: 4px;
+}
+
+/* La tarjeta de "producto que más deja" usa el verde de marca para
+   distinguirse del resto: es el dato más interesante del dashboard, no
+   solo un número más. */
+.dashboard-card--destacada {
+  background-color: var(--marca);
+}
+
+.dashboard-card--destacada .dashboard-card__etiqueta,
+.dashboard-card--destacada .dashboard-card__detalle {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.dashboard-card--destacada .dashboard-card__cifra {
+  color: var(--superficie);
+}
+
+/* ============================================================
+   Histórico de ventas (historico.html)
+   ============================================================ */
+.historico__filtros {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.historico__filtros input[type="date"] {
+  padding: 10px 12px;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  font-family: var(--fuente);
+  font-size: 0.9rem;
+}
+
+.celda-items {
+  color: var(--tinta-suave);
+  font-size: 0.85rem;
+}

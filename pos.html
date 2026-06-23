@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Despacha — Cobro</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0f5132" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="css/estilos.css" />
+</head>
+<body>
+  <header class="barra-superior pos-barra">
+    <div class="barra-superior__marca">
+      <span class="barra-superior__logo">D</span>
+      <span data-nombre-negocio>Despacha</span>
+    </div>
+
+    <nav class="barra-nav">
+      <a href="pos.html" aria-current="page">Cobrar</a>
+      <a href="catalogo.html">Catálogo</a>
+      <!-- Inventario, dashboard e histórico son exclusivos del Dueño
+           (sección 3 del plan), así que estos links arrancan ocultos y
+           solo los muestra pos.js si el rol activo es "dueño". -->
+      <a href="inventario.html" data-nav-dueno hidden>Inventario</a>
+      <a href="dashboard.html" data-nav-dueno hidden>Dashboard</a>
+      <a href="historico.html" data-nav-dueno hidden>Histórico</a>
+    </nav>
+
+    <!-- Búsqueda en vivo (sección 3 del diseño): NO es AJAX, filtra al
+         instante lo que ya está cargado en memoria. -->
+    <input
+      class="pos-barra__busqueda"
+      type="search"
+      placeholder="Buscar producto..."
+      data-buscador
+      aria-label="Buscar producto"
+    />
+
+    <div class="pos-barra__derecha">
+      <span class="pos-barra__rol" data-rol-actual></span>
+      <button class="pos-barra__cambiar-rol" type="button" data-cambiar-rol>
+        Cambiar rol
+      </button>
+      <span data-reloj></span>
+    </div>
+  </header>
+
+  <!-- Categorías arriba del grid, con toggle para colapsarlas
+       (sección 3 del diseño). El contenido de la lista lo genera
+       pos.js a partir de las categorías que existan en el catálogo. -->
+  <nav class="categorias">
+    <button
+      class="categorias__toggle"
+      type="button"
+      data-toggle-categorias
+      aria-label="Mostrar u ocultar categorías"
+      aria-expanded="true"
+    >
+      ⌄
+    </button>
+    <div class="categorias__lista" data-lista-categorias></div>
+  </nav>
+
+  <main class="pos-layout">
+    <section class="grid-productos" data-grid-productos></section>
+
+    <aside class="ticket">
+      <!-- El botón de colapsar solo se ve en celular (CSS lo esconde
+           en escritorio): ahí el ticket se vuelve una barra fija
+           abajo, y sin esto se quedaría tapando el grid de productos
+           todo el tiempo. -->
+      <div class="ticket__encabezado">
+        <h2>Ticket actual</h2>
+        <button
+          type="button"
+          class="ticket__toggle-movil"
+          data-toggle-ticket-movil
+          aria-expanded="true"
+          aria-label="Mostrar u ocultar el detalle del ticket"
+        >
+          ⌄
+        </button>
+      </div>
+
+      <div data-ticket-contenido>
+        <p class="ticket-vacio" data-ticket-vacio>
+          Aún no hay ventas en este ticket. Toca un producto para empezar a cobrar.
+        </p>
+
+        <ul class="ticket-lista" data-ticket-lista></ul>
+      </div>
+
+      <div class="ticket-total-row">
+        <span>Total</span>
+        <strong data-ticket-total>$0.00</strong>
+      </div>
+
+      <button class="boton-cobrar" type="button" data-boton-cobrar disabled>
+        Cobrar
+      </button>
+    </aside>
+  </main>
+
+  <!-- Ventas recientes, debajo del POS: sirve para resolver rápido una
+       duda de un cliente ("¿cuánto pagué?", "¿qué llevé?") sin tener
+       que ir al histórico (que es solo del Dueño). Solo muestra lo
+       mismo que vería en un recibo, no costos ni márgenes. -->
+  <section class="catalogo">
+    <div class="catalogo__encabezado">
+      <h2>Ventas recientes</h2>
+    </div>
+
+    <div class="tabla-scroll">
+      <table class="tabla-catalogo" data-tabla-ventas-recientes hidden>
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Productos</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody data-cuerpo-ventas-recientes></tbody>
+      </table>
+    </div>
+
+    <p class="catalogo__vacio" data-ventas-recientes-vacio hidden>
+      Aún no hay ventas registradas.
+    </p>
+  </section>
+
+  <!-- Modal: teclado de peso. Es el "elemento de firma" del diseño
+       (sección 4): aparece al tocar un producto por kilo. -->
+  <div class="overlay" data-overlay-peso hidden>
+    <div class="modal">
+      <p class="modal__titulo" data-peso-nombre></p>
+      <p class="modal__subtitulo" data-peso-precio></p>
+
+      <div class="modal__modo">
+        <button type="button" data-modo-peso="kg" aria-pressed="true">Teclear kilos</button>
+        <button type="button" data-modo-peso="monto" aria-pressed="false">Teclear monto</button>
+      </div>
+
+      <div class="modal__pantalla">
+        <p class="modal__pantalla-cifra" data-peso-pantalla>0</p>
+        <p class="modal__pantalla-detalle" data-peso-detalle>Subtotal: $0.00</p>
+      </div>
+
+      <p class="modal__error" data-peso-error></p>
+
+      <div class="teclado-numerico" data-teclado-peso>
+        <button type="button" data-tecla="1">1</button>
+        <button type="button" data-tecla="2">2</button>
+        <button type="button" data-tecla="3">3</button>
+        <button type="button" data-tecla="4">4</button>
+        <button type="button" data-tecla="5">5</button>
+        <button type="button" data-tecla="6">6</button>
+        <button type="button" data-tecla="7">7</button>
+        <button type="button" data-tecla="8">8</button>
+        <button type="button" data-tecla="9">9</button>
+        <button type="button" data-tecla=".">.</button>
+        <button type="button" data-tecla="0">0</button>
+        <button type="button" data-tecla="borrar">⌫</button>
+      </div>
+
+      <div class="modal__acciones">
+        <button class="boton-secundario" type="button" data-peso-cancelar>Cancelar</button>
+        <button class="boton-cobrar" type="button" data-peso-agregar>Agregar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: panel de cobro (efectivo o tarjeta) -->
+  <div class="overlay" data-overlay-cobro hidden>
+    <div class="modal">
+      <p class="modal__titulo">Cobrar</p>
+      <p class="modal__subtitulo" data-cobro-total></p>
+
+      <div class="metodo-pago">
+        <button type="button" data-metodo="efectivo" aria-pressed="true">Efectivo</button>
+        <button type="button" data-metodo="tarjeta" aria-pressed="false">Tarjeta</button>
+      </div>
+
+      <div data-bloque-efectivo>
+        <input
+          class="campo-recibido"
+          type="number"
+          min="0"
+          step="0.5"
+          placeholder="Recibido"
+          data-campo-recibido
+          aria-label="Monto recibido en efectivo"
+        />
+        <p class="modal__pantalla-detalle" data-cambio-detalle>Cambio: $0.00</p>
+      </div>
+
+      <p class="modal__error" data-cobro-error></p>
+
+      <div class="modal__acciones">
+        <button class="boton-secundario" type="button" data-cobro-cancelar>Cancelar</button>
+        <button class="boton-cobrar" type="button" data-cobro-confirmar>Guardar venta</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="toast" data-toast hidden></p>
+
+  <script type="module" src="js/pos.js"></script>
+  <script type="module" src="js/registro-pwa.js"></script>
+</body>
+</html>

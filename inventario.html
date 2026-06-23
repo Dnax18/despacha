@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Despacha — Inventario</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0f5132" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="css/estilos.css" />
+</head>
+<body>
+  <header class="barra-superior pos-barra">
+    <div class="barra-superior__marca">
+      <span class="barra-superior__logo">D</span>
+      <span data-nombre-negocio>Despacha</span>
+    </div>
+
+    <nav class="barra-nav">
+      <a href="pos.html">Cobrar</a>
+      <a href="catalogo.html">Catálogo</a>
+      <a href="inventario.html" aria-current="page">Inventario</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="historico.html">Histórico</a>
+    </nav>
+
+    <input
+      class="pos-barra__busqueda"
+      type="search"
+      placeholder="Buscar producto..."
+      data-buscador
+      aria-label="Buscar producto"
+    />
+
+    <div class="pos-barra__derecha">
+      <span class="pos-barra__rol" data-rol-actual></span>
+      <button class="pos-barra__cambiar-rol" type="button" data-cambiar-rol>
+        Cambiar rol
+      </button>
+    </div>
+  </header>
+
+  <main class="catalogo">
+    <div class="catalogo__encabezado">
+      <h1>Inventario</h1>
+    </div>
+
+    <div class="tabla-scroll">
+      <table class="tabla-catalogo" data-tabla-inventario hidden>
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Categoría</th>
+            <th>Stock actual</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody data-cuerpo-inventario></tbody>
+      </table>
+    </div>
+
+    <p class="catalogo__vacio" data-inventario-vacio hidden></p>
+
+    <div class="catalogo__encabezado catalogo__encabezado--separado">
+      <h1>Entradas registradas</h1>
+    </div>
+
+    <div class="tabla-scroll">
+      <table class="tabla-catalogo" data-tabla-entradas hidden>
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Producto</th>
+            <th>Cantidad recibida</th>
+          </tr>
+        </thead>
+        <tbody data-cuerpo-entradas></tbody>
+      </table>
+    </div>
+
+    <p class="catalogo__vacio catalogo__vacio--compacto" data-entradas-vacio hidden>
+      Aún no se ha registrado ninguna entrada de mercancía.
+    </p>
+
+    <div class="catalogo__encabezado catalogo__encabezado--separado">
+      <h1>Mermas registradas</h1>
+    </div>
+
+    <div class="tabla-scroll">
+      <table class="tabla-catalogo" data-tabla-mermas hidden>
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Pérdida</th>
+            <th>Motivo</th>
+          </tr>
+        </thead>
+        <tbody data-cuerpo-mermas></tbody>
+      </table>
+    </div>
+
+    <p class="catalogo__vacio catalogo__vacio--compacto" data-mermas-vacio hidden>
+      Aún no se ha registrado ninguna merma.
+    </p>
+  </main>
+
+  <!-- Modal: registrar entrada de mercancía (compra) -->
+  <div class="overlay" data-overlay-entrada hidden>
+    <div class="modal">
+      <p class="modal__titulo" data-entrada-nombre></p>
+      <p class="modal__subtitulo" data-entrada-stock-actual></p>
+
+      <form data-form-entrada>
+        <div class="campo">
+          <label for="campo-entrada-cantidad" data-entrada-etiqueta>Cantidad recibida</label>
+          <input type="number" id="campo-entrada-cantidad" min="0" step="0.01" data-campo-entrada-cantidad required />
+        </div>
+
+        <p class="modal__error" data-entrada-error></p>
+
+        <div class="modal__acciones">
+          <button class="boton-secundario" type="button" data-entrada-cancelar>Cancelar</button>
+          <button class="boton-primario" type="submit">Registrar entrada</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: ajustar el stock directo (ej: corregir un conteo mal
+       hecho). A diferencia de "Entrada" y "Merma", esto NO se guarda
+       en ningún historial ni se contabiliza como compra o pérdida:
+       es solo corregir el número para que cuadre con la realidad. -->
+  <div class="overlay" data-overlay-ajuste hidden>
+    <div class="modal">
+      <p class="modal__titulo" data-ajuste-nombre></p>
+      <p class="modal__subtitulo" data-ajuste-stock-actual></p>
+
+      <form data-form-ajuste>
+        <div class="campo">
+          <label for="campo-ajuste-cantidad" data-ajuste-etiqueta>Stock real</label>
+          <input type="number" id="campo-ajuste-cantidad" min="0" step="0.01" data-campo-ajuste-cantidad required />
+        </div>
+
+        <p class="modal__error" data-ajuste-error></p>
+
+        <div class="modal__acciones">
+          <button class="boton-secundario" type="button" data-ajuste-cancelar>Cancelar</button>
+          <button class="boton-primario" type="submit">Guardar ajuste</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: registrar merma -->
+  <div class="overlay" data-overlay-merma hidden>
+    <div class="modal">
+      <p class="modal__titulo" data-merma-nombre></p>
+      <p class="modal__subtitulo" data-merma-stock-actual></p>
+
+      <form data-form-merma>
+        <div class="campo">
+          <label for="campo-merma-cantidad" data-merma-etiqueta>Cantidad perdida</label>
+          <input type="number" id="campo-merma-cantidad" min="0" step="0.01" data-campo-merma-cantidad required />
+        </div>
+
+        <div class="campo">
+          <label for="campo-merma-motivo">Motivo</label>
+          <input
+            type="text"
+            id="campo-merma-motivo"
+            data-campo-merma-motivo
+            placeholder="Ej: se echó a perder"
+            required
+          />
+        </div>
+
+        <p class="modal__pantalla-detalle" data-merma-perdida-estimada>Pérdida estimada: $0.00</p>
+        <p class="modal__error" data-merma-error></p>
+
+        <div class="modal__acciones">
+          <button class="boton-secundario" type="button" data-merma-cancelar>Cancelar</button>
+          <button class="boton-eliminar" type="submit">Registrar merma</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <p class="toast" data-toast hidden></p>
+
+  <script type="module" src="js/inventario.js"></script>
+  <script type="module" src="js/registro-pwa.js"></script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Despacha — Dashboard</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0f5132" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="css/estilos.css" />
+</head>
+<body>
+  <header class="barra-superior pos-barra">
+    <div class="barra-superior__marca">
+      <span class="barra-superior__logo">D</span>
+      <span data-nombre-negocio>Despacha</span>
+    </div>
+
+    <nav class="barra-nav">
+      <a href="pos.html">Cobrar</a>
+      <a href="catalogo.html">Catálogo</a>
+      <a href="inventario.html">Inventario</a>
+      <a href="dashboard.html" aria-current="page">Dashboard</a>
+      <a href="historico.html">Histórico</a>
+    </nav>
+
+    <div class="pos-barra__derecha">
+      <span class="pos-barra__rol" data-rol-actual></span>
+      <button class="pos-barra__cambiar-rol" type="button" data-cambiar-rol>
+        Cambiar rol
+      </button>
+    </div>
+  </header>
+
+  <main class="catalogo">
+    <div class="catalogo__encabezado">
+      <h1>Dashboard</h1>
+    </div>
+
+    <!-- Periodo: cambia todas las tarjetas de abajo a la vez. "Esta
+         semana" son los últimos 7 días (no la semana de calendario),
+         para no meterse en si empieza lunes o domingo. -->
+    <div class="selector-pildoras" data-selector-periodo>
+      <button type="button" data-periodo="hoy" aria-pressed="true">Hoy</button>
+      <button type="button" data-periodo="semana" aria-pressed="false">Esta semana</button>
+      <button type="button" data-periodo="mes" aria-pressed="false">Este mes</button>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="dashboard-card">
+        <p class="dashboard-card__etiqueta">Venta total</p>
+        <p class="dashboard-card__cifra" data-dato-venta-total>$0.00</p>
+        <p class="dashboard-card__detalle" data-dato-num-ventas>0 ventas</p>
+      </div>
+
+      <div class="dashboard-card">
+        <p class="dashboard-card__etiqueta">Ganancia estimada</p>
+        <p class="dashboard-card__cifra" data-dato-ganancia>$0.00</p>
+        <p class="dashboard-card__detalle">Venta menos costo de lo vendido</p>
+      </div>
+
+      <div class="dashboard-card">
+        <p class="dashboard-card__etiqueta">Merma del periodo</p>
+        <p class="dashboard-card__cifra" data-dato-merma>$0.00</p>
+        <p class="dashboard-card__detalle" data-dato-merma-detalle>0 registros</p>
+      </div>
+
+      <div class="dashboard-card dashboard-card--destacada">
+        <p class="dashboard-card__etiqueta">Producto que más deja</p>
+        <p class="dashboard-card__cifra" data-dato-producto-estrella>—</p>
+        <p class="dashboard-card__detalle" data-dato-producto-estrella-margen></p>
+      </div>
+    </div>
+
+    <div class="catalogo__encabezado catalogo__encabezado--separado">
+      <h2>Ingresos por método de pago</h2>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="dashboard-card">
+        <p class="dashboard-card__etiqueta">Efectivo</p>
+        <p class="dashboard-card__cifra" data-dato-ingreso-efectivo>$0.00</p>
+        <p class="dashboard-card__detalle" data-dato-ventas-efectivo>0 ventas</p>
+      </div>
+
+      <div class="dashboard-card">
+        <p class="dashboard-card__etiqueta">Tarjeta</p>
+        <p class="dashboard-card__cifra" data-dato-ingreso-tarjeta>$0.00</p>
+        <p class="dashboard-card__detalle" data-dato-ventas-tarjeta>0 ventas</p>
+      </div>
+    </div>
+
+    <p class="catalogo__vacio" data-dashboard-vacio hidden>
+      Aún no hay ventas en este periodo. Cuando cobres en el POS, aquí vas a ver el resumen.
+    </p>
+  </main>
+
+  <script type="module" src="js/dashboard.js"></script>
+  <script type="module" src="js/registro-pwa.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+# Configuración local de herramientas (no es parte del producto)
+.claude/
+
+# Carpetas de prueba temporales que a veces quedan de pruebas manuales
+smoke-test-tmp*/
+.tmp-test/
+
+# Por si alguna vez se instala algo con npm dentro del proyecto
+node_modules/

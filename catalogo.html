@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Despacha — Catálogo</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0f5132" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="css/estilos.css" />
+</head>
+<body>
+  <header class="barra-superior pos-barra">
+    <div class="barra-superior__marca">
+      <span class="barra-superior__logo">D</span>
+      <span data-nombre-negocio>Despacha</span>
+    </div>
+
+    <nav class="barra-nav">
+      <a href="pos.html">Cobrar</a>
+      <a href="catalogo.html" aria-current="page">Catálogo</a>
+      <a href="inventario.html" data-nav-dueno hidden>Inventario</a>
+      <a href="dashboard.html" data-nav-dueno hidden>Dashboard</a>
+      <a href="historico.html" data-nav-dueno hidden>Histórico</a>
+    </nav>
+
+    <!-- Mismo buscador en vivo del POS: filtra al instante lo que ya
+         está en memoria, sin pedirle nada a un servidor. -->
+    <input
+      class="pos-barra__busqueda"
+      type="search"
+      placeholder="Buscar producto..."
+      data-buscador
+      aria-label="Buscar producto"
+    />
+
+    <div class="pos-barra__derecha">
+      <span class="pos-barra__rol" data-rol-actual></span>
+      <button class="pos-barra__cambiar-rol" type="button" data-cambiar-rol>
+        Cambiar rol
+      </button>
+    </div>
+  </header>
+
+  <main class="catalogo">
+    <div class="catalogo__encabezado">
+      <h1>Catálogo de productos</h1>
+      <!-- Este botón solo se muestra si el rol activo es "dueño":
+           pos.js / catalogo.js deciden eso en JS, no aquí, porque el
+           rol puede cambiar sin recargar el HTML. -->
+      <button class="boton-primario" type="button" data-abrir-agregar hidden>
+        Agregar producto
+      </button>
+    </div>
+
+    <div class="tabla-scroll">
+      <table class="tabla-catalogo" data-tabla-catalogo hidden>
+        <thead>
+          <tr data-fila-encabezado>
+            <th>Producto</th>
+            <th>Categoría</th>
+            <th>Tipo</th>
+            <th>Precio</th>
+            <th data-columna-costo hidden>Costo</th>
+            <th>Stock</th>
+            <th data-columna-acciones hidden>Acciones</th>
+          </tr>
+        </thead>
+        <tbody data-cuerpo-catalogo></tbody>
+      </table>
+    </div>
+
+    <p class="catalogo__vacio" data-catalogo-vacio hidden>
+      Aún no hay productos en el catálogo. Agrega el primero para empezar a vender.
+    </p>
+  </main>
+
+  <!-- Modal: agregar / editar producto (solo dueño) -->
+  <div class="overlay" data-overlay-producto hidden>
+    <div class="modal modal--ancho">
+      <p class="modal__titulo" data-form-titulo>Agregar producto</p>
+
+      <form data-form-producto>
+        <div class="campo">
+          <label for="campo-nombre">Nombre</label>
+          <input type="text" id="campo-nombre" data-campo-nombre required />
+        </div>
+
+        <div class="campo">
+          <label for="campo-categoria">Categoría</label>
+          <input type="text" id="campo-categoria" data-campo-categoria list="categorias-existentes" required />
+          <datalist id="categorias-existentes" data-datalist-categorias></datalist>
+        </div>
+
+        <div class="campo">
+          <label>Tipo de venta</label>
+          <div class="campo-radios">
+            <label><input type="radio" name="tipoVenta" value="pieza" data-campo-tipo checked /> Por pieza</label>
+            <label><input type="radio" name="tipoVenta" value="peso" data-campo-tipo /> Por peso (kg)</label>
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="campo-precio" data-etiqueta-precio>Precio de venta ($ por pieza)</label>
+          <input type="number" id="campo-precio" min="0" step="0.01" data-campo-precio required />
+        </div>
+
+        <div class="campo">
+          <label for="campo-costo">Costo (lo que te cuesta a ti)</label>
+          <input type="number" id="campo-costo" min="0" step="0.01" data-campo-costo required />
+        </div>
+
+        <div class="campo">
+          <label for="campo-stock" data-etiqueta-stock>Stock inicial (piezas)</label>
+          <input type="number" id="campo-stock" min="0" step="1" data-campo-stock required />
+        </div>
+
+        <p class="modal__error" data-form-error></p>
+
+        <div class="modal__acciones">
+          <button class="boton-secundario" type="button" data-form-cancelar>Cancelar</button>
+          <button class="boton-primario" type="submit">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Aviso de "Producto guardado" / "Producto eliminado" -->
+  <p class="toast" data-toast hidden></p>
+
+  <script type="module" src="js/catalogo.js"></script>
+  <script type="module" src="js/registro-pwa.js"></script>
+</body>
+</html>

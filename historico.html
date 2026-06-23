@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Despacha — Histórico de ventas</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0f5132" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="css/estilos.css" />
+</head>
+<body>
+  <header class="barra-superior pos-barra">
+    <div class="barra-superior__marca">
+      <span class="barra-superior__logo">D</span>
+      <span data-nombre-negocio>Despacha</span>
+    </div>
+
+    <nav class="barra-nav">
+      <a href="pos.html">Cobrar</a>
+      <a href="catalogo.html">Catálogo</a>
+      <a href="inventario.html">Inventario</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="historico.html" aria-current="page">Histórico</a>
+    </nav>
+
+    <div class="pos-barra__derecha">
+      <span class="pos-barra__rol" data-rol-actual></span>
+      <button class="pos-barra__cambiar-rol" type="button" data-cambiar-rol>
+        Cambiar rol
+      </button>
+    </div>
+  </header>
+
+  <main class="catalogo">
+    <div class="catalogo__encabezado">
+      <h1>Histórico de ventas</h1>
+    </div>
+
+    <div class="historico__filtros">
+      <label for="campo-filtro-fecha">Filtrar por día</label>
+      <input type="date" id="campo-filtro-fecha" data-filtro-fecha />
+      <button class="boton-secundario boton-secundario--en-linea" type="button" data-limpiar-filtro>
+        Ver todas
+      </button>
+    </div>
+
+    <div class="tabla-scroll">
+      <table class="tabla-catalogo" data-tabla-historico hidden>
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Productos</th>
+            <th>Total</th>
+            <th>Pago</th>
+            <th>Registrada por</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody data-cuerpo-historico></tbody>
+      </table>
+    </div>
+
+    <p class="catalogo__vacio" data-historico-vacio hidden>
+      Aún no hay ventas registradas. Cuando cobres en el POS, aparecen aquí.
+    </p>
+  </main>
+
+  <!-- Modal: editar una venta ya registrada (solo Dueño, para corregir
+       un error del mostrador). Al guardar, el stock se ajusta solo:
+       primero se "regresa" lo que esa venta había descontado, y luego
+       se vuelve a descontar según los productos/cantidades nuevas. -->
+  <div class="overlay" data-overlay-editar-venta hidden>
+    <div class="modal modal--ancho">
+      <p class="modal__titulo">Editar venta</p>
+      <p class="modal__subtitulo" data-editar-venta-fecha></p>
+
+      <ul class="ticket-lista" data-editar-venta-items></ul>
+
+      <div class="campo">
+        <label for="select-agregar-producto">Agregar producto a la venta</label>
+        <select id="select-agregar-producto" data-select-agregar-producto></select>
+      </div>
+
+      <div class="metodo-pago" data-editar-metodo-pago>
+        <button type="button" data-metodo="efectivo" aria-pressed="true">Efectivo</button>
+        <button type="button" data-metodo="tarjeta" aria-pressed="false">Tarjeta</button>
+      </div>
+
+      <div class="ticket-total-row">
+        <span>Total</span>
+        <strong data-editar-venta-total>$0.00</strong>
+      </div>
+
+      <p class="modal__error" data-editar-venta-error></p>
+
+      <div class="modal__acciones">
+        <button class="boton-secundario" type="button" data-editar-venta-cancelar>Cancelar</button>
+        <button class="boton-primario" type="button" data-editar-venta-guardar>Guardar cambios</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="toast" data-toast hidden></p>
+
+  <script type="module" src="js/historico.js"></script>
+  <script type="module" src="js/registro-pwa.js"></script>
+</body>
+</html>
