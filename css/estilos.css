@@ -1241,6 +1241,26 @@ a {
     font-size: 0.8rem;
   }
 
+  /* "Cambiar rol" como texto seguía sumando ancho a una fila ya
+     apretada y rompía el header. En móvil se reemplaza visualmente
+     por un ícono de cambio (el texto se queda en el HTML, solo se
+     esconde, para no perder accesibilidad con lectores de pantalla). */
+  .barra-superior.pos-barra .pos-barra__cambiar-rol {
+    font-size: 0;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .barra-superior.pos-barra .pos-barra__cambiar-rol::before {
+    content: "⇄";
+    font-size: 1rem;
+    text-decoration: none;
+  }
+
   .barra-superior.pos-barra .pos-barra__busqueda {
     order: 3;
     flex-basis: 100%;
@@ -1296,13 +1316,13 @@ a {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  /* Si el catálogo tiene un número impar de productos, el último
-     queda solo en la columna izquierda con un hueco vacío a la
-     derecha. Centrarlo a la mitad del ancho para que la fila final
-     se vea balanceada en vez de descuadrada. */
-  .grid-productos > *:last-child:nth-child(odd) {
-    grid-column: span 2;
-    max-width: calc(50% - 7px);
-    margin: 0 auto;
+  /* El espacio entre tarjetas (gap de .grid-productos, 14px) y el
+     espacio entre la pared del celular y la primera/última tarjeta
+     (padding de .pos-layout, 20px) no eran iguales. Se iguala el
+     padding lateral al gap para que la distancia se vea pareja. */
+  .pos-layout {
+    padding-left: 14px;
+    padding-right: 14px;
   }
+
 }
