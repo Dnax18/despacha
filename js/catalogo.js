@@ -40,11 +40,12 @@ function pintarBarraSuperior() {
 // Decide qué partes de la pantalla se ven según el rol. Lo hacemos en
 // JS (no escondiendo todo por CSS de antemano) porque el rol puede
 // cambiar entre sesiones y el HTML siempre arranca igual para todos.
+// Mostrador y Dueño administran el catálogo por igual (agregar, editar,
+// eliminar); lo único exclusivo de Dueño es ver el costo de cada
+// producto, tanto en la tabla como en el formulario.
 function aplicarPermisosSegunRol() {
-  document.querySelector("[data-abrir-agregar]").hidden = !esDueno;
   document.querySelector("[data-columna-costo]").hidden = !esDueno;
-  document.querySelector("[data-columna-creado]").hidden = !esDueno;
-  document.querySelector("[data-columna-acciones]").hidden = !esDueno;
+  document.querySelector("[data-campo-costo-contenedor]").hidden = !esDueno;
 }
 
 // ============================================================
@@ -89,30 +90,27 @@ function pintarTabla() {
           ? `${formatoMoneda(producto.precioVenta)}/kg`
           : formatoMoneda(producto.precioVenta);
 
-      // Solo armamos las celdas de costo y acciones si el rol es
-      // dueño: así un Mostrador jamás recibe ese dato en el HTML,
-      // ni siquiera escondido con CSS (que se podría inspeccionar).
+      // Solo el costo es exclusivo de Dueño: así un Mostrador jamás lo
+      // recibe en el HTML, ni siquiera escondido con CSS (que se
+      // podría inspeccionar). Agregar/editar/eliminar son de ambos.
       const celdaCosto = esDueno ? `<td class="celda-numero">${formatoMoneda(producto.costo)}</td>` : "";
-      const celdaCreado = esDueno ? `<td>${producto.fechaCreacion ?? "—"}</td>` : "";
 
-      const celdaAcciones = esDueno
-        ? `<td>${
-            idPendienteEliminar === producto.id
-              ? `
-                <span class="confirmar-eliminar">
-                  ¿Eliminar?
-                  <button type="button" data-confirmar-si="${producto.id}">Sí</button>
-                  <button type="button" data-confirmar-no>No</button>
-                </span>
-              `
-              : `
-                <div class="catalogo__acciones-fila">
-                  <button type="button" class="boton-editar" data-editar="${producto.id}">Editar</button>
-                  <button type="button" class="boton-eliminar" data-eliminar="${producto.id}">Eliminar</button>
-                </div>
-              `
-          }</td>`
-        : "";
+      const celdaAcciones = `<td>${
+        idPendienteEliminar === producto.id
+          ? `
+            <span class="confirmar-eliminar">
+              ¿Eliminar?
+              <button type="button" data-confirmar-si="${producto.id}">Sí</button>
+              <button type="button" data-confirmar-no>No</button>
+            </span>
+          `
+          : `
+            <div class="catalogo__acciones-fila">
+              <button type="button" class="boton-editar" data-editar="${producto.id}">Editar</button>
+              <button type="button" class="boton-eliminar" data-eliminar="${producto.id}">Eliminar</button>
+            </div>
+          `
+      }</td>`;
 
       return `
         <tr>
@@ -122,14 +120,11 @@ function pintarTabla() {
           <td class="celda-numero">${precio}</td>
           ${celdaCosto}
           <td class="celda-numero">${producto.stock} ${producto.unidad}</td>
-          ${celdaCreado}
           ${celdaAcciones}
         </tr>
       `;
     })
     .join("");
-
-  if (!esDueno) return;
 
   cuerpo.querySelectorAll("[data-editar]").forEach((boton) => {
     boton.addEventListener("click", () => abrirModalEditar(boton.dataset.editar));
@@ -159,7 +154,46 @@ function eliminarProducto(id) {
   guardarProductos(productos);
   idPendienteEliminar = null;
   pintarTabla();
+  pintarRegistroProductos();
   mostrarAviso("Producto eliminado");
+}
+
+// ============================================================
+// Bitácora de productos agregados (orden: más reciente primero)
+// ============================================================
+
+function pintarRegistroProductos() {
+  const tabla = document.querySelector("[data-tabla-registro-productos]");
+  const vacio = document.querySelector("[data-registro-productos-vacio]");
+  const cuerpo = document.querySelector("[data-cuerpo-registro-productos]");
+
+  if (productos.length === 0) {
+    tabla.hidden = true;
+    vacio.hidden = false;
+    return;
+  }
+
+  tabla.hidden = false;
+  vacio.hidden = true;
+
+  // localeCompare en orden descendente: fechas más nuevas primero.
+  // Los productos sin fechaCreacion (creados antes de este cambio)
+  // usan "" como respaldo, así que quedan al final sin tronar nada.
+  const ordenados = [...productos].sort((a, b) =>
+    (b.fechaCreacion ?? "").localeCompare(a.fechaCreacion ?? "")
+  );
+
+  cuerpo.innerHTML = ordenados
+    .map(
+      (producto) => `
+        <tr>
+          <td>${producto.fechaCreacion ?? "—"}</td>
+          <td>${producto.nombre}</td>
+          <td>${producto.categoria}</td>
+        </tr>
+      `
+    )
+    .join("");
 }
 
 // ============================================================
@@ -262,9 +296,14 @@ function manejarSubmitFormulario(evento) {
       : valorCategoria.trim();
   const tipoVenta = document.querySelector("[data-campo-tipo]:checked").value;
   const precioVenta = Number.parseFloat(document.querySelector("[data-campo-precio]").value);
-  const costo = Number.parseFloat(document.querySelector("[data-campo-costo]").value);
   const stock = Number.parseFloat(document.querySelector("[data-campo-stock]").value);
   const error = document.querySelector("[data-form-error]");
+
+  // Mostrador no ve el campo de costo: no se le puede pedir que lo
+  // llene. Para un producto nuevo el costo queda en 0 (Dueño lo puede
+  // editar después); para uno existente se conserva el que ya tenía.
+  const costoVisible = !document.querySelector("[data-campo-costo-contenedor]").hidden;
+  const costoIngresado = Number.parseFloat(document.querySelector("[data-campo-costo]").value);
 
   if (!nombre) {
     error.textContent = "Falta el nombre del producto.";
@@ -278,7 +317,7 @@ function manejarSubmitFormulario(evento) {
     error.textContent = "El precio de venta debe ser mayor a cero.";
     return;
   }
-  if (!Number.isFinite(costo) || costo < 0) {
+  if (costoVisible && (!Number.isFinite(costoIngresado) || costoIngresado < 0)) {
     error.textContent = "Falta el costo del producto.";
     return;
   }
@@ -288,6 +327,8 @@ function manejarSubmitFormulario(evento) {
   }
 
   const unidad = tipoVenta === "peso" ? "kg" : "pza";
+  const productoExistente = productoEditandoId && productos.find((item) => item.id === productoEditandoId);
+  const costo = costoVisible ? costoIngresado : productoExistente ? productoExistente.costo : 0;
 
   if (productoEditandoId) {
     // findIndex regresa la POSICIÓN del elemento dentro del array (un
@@ -328,6 +369,7 @@ function manejarSubmitFormulario(evento) {
   guardarProductos(productos);
   cerrarModalProducto();
   pintarTabla();
+  pintarRegistroProductos();
   mostrarAviso(productoEditandoId ? "Producto actualizado" : "Producto guardado");
 }
 
@@ -353,6 +395,7 @@ document.addEventListener("DOMContentLoaded", () => {
   pintarBarraSuperior();
   aplicarPermisosSegunRol();
   pintarTabla();
+  pintarRegistroProductos();
 
   document.querySelector("[data-buscador]").addEventListener("input", (evento) => {
     terminoBusqueda = evento.target.value;
@@ -363,11 +406,6 @@ document.addEventListener("DOMContentLoaded", () => {
     cerrarSesionRol();
     window.location.href = "index.html";
   });
-
-  // El resto de los controles (agregar, editar el formulario) solo
-  // existen en el DOM para el dueño en la práctica, pero igual
-  // protegemos con esDueno para no atar listeners que nunca se usarán.
-  if (!esDueno) return;
 
   document.querySelector("[data-abrir-agregar]").addEventListener("click", abrirModalAgregar);
   document.querySelector("[data-form-cancelar]").addEventListener("click", cerrarModalProducto);

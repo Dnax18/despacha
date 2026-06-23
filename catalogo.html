@@ -51,10 +51,10 @@
   <main class="catalogo">
     <div class="catalogo__encabezado">
       <h1>Catálogo de productos</h1>
-      <!-- Este botón solo se muestra si el rol activo es "dueño":
-           pos.js / catalogo.js deciden eso en JS, no aquí, porque el
-           rol puede cambiar sin recargar el HTML. -->
-      <button class="boton-primario" type="button" data-abrir-agregar hidden>
+      <!-- Mostrador y Dueño pueden agregar/editar/eliminar productos
+           por igual; lo único exclusivo de Dueño es ver el costo
+           (esa parte sí se decide por rol en catalogo.js). -->
+      <button class="boton-primario" type="button" data-abrir-agregar>
         Agregar producto
       </button>
     </div>
@@ -69,8 +69,7 @@
             <th>Precio</th>
             <th data-columna-costo hidden>Costo</th>
             <th>Stock</th>
-            <th data-columna-creado hidden>Creado</th>
-            <th data-columna-acciones hidden>Acciones</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody data-cuerpo-catalogo></tbody>
@@ -79,6 +78,31 @@
 
     <p class="catalogo__vacio" data-catalogo-vacio hidden>
       Aún no hay productos en el catálogo. Agrega el primero para empezar a vender.
+    </p>
+
+    <!-- Bitácora de cuándo se agregó cada producto, separada de la
+         tabla principal (esa muestra el catálogo actual, esta el
+         historial de altas). Mismo dato (fechaCreacion) que se guarda
+         desde el formulario de agregar/editar. -->
+    <div class="catalogo__encabezado catalogo__encabezado--separado">
+      <h1>Productos agregados</h1>
+    </div>
+
+    <div class="tabla-scroll">
+      <table class="tabla-catalogo" data-tabla-registro-productos hidden>
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Producto</th>
+            <th>Categoría</th>
+          </tr>
+        </thead>
+        <tbody data-cuerpo-registro-productos></tbody>
+      </table>
+    </div>
+
+    <p class="catalogo__vacio catalogo__vacio--compacto" data-registro-productos-vacio hidden>
+      Aún no se ha agregado ningún producto.
     </p>
   </main>
 
@@ -124,7 +148,7 @@
           <input type="number" id="campo-precio" min="0" step="0.01" data-campo-precio required />
         </div>
 
-        <div class="campo">
+        <div class="campo" data-campo-costo-contenedor>
           <label for="campo-costo">Costo (lo que te cuesta a ti)</label>
           <input type="number" id="campo-costo" min="0" step="0.01" data-campo-costo required />
         </div>
