@@ -88,26 +88,6 @@ function pintarBarraSuperior() {
   });
 }
 
-function iniciarReloj() {
-  const elementoReloj = document.querySelector("[data-reloj]");
-
-  function actualizar() {
-    const ahora = new Date();
-    // padStart(2, "0") rellena con un cero a la izquierda si el número
-    // tiene un solo dígito (ej: "9" se vuelve "09"). Así la hora nunca
-    // se ve como "9:5" sino "09:05".
-    const horas = String(ahora.getHours()).padStart(2, "0");
-    const minutos = String(ahora.getMinutes()).padStart(2, "0");
-    elementoReloj.textContent = `${horas}:${minutos}`;
-  }
-
-  actualizar();
-  // setInterval repite una función cada X milisegundos. No hace falta
-  // detenerlo con clearInterval porque vive mientras la pestaña esté
-  // abierta, y al cerrarla el navegador limpia todo solo.
-  setInterval(actualizar, 30000);
-}
-
 // ============================================================
 // Categorías
 // ============================================================
@@ -608,7 +588,6 @@ document.addEventListener("DOMContentLoaded", () => {
   productos = obtenerProductos();
 
   pintarBarraSuperior();
-  iniciarReloj();
   pintarCategorias();
   pintarGridProductos();
   pintarTicket();
