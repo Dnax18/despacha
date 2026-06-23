@@ -69,6 +69,7 @@
             <th>Precio</th>
             <th data-columna-costo hidden>Costo</th>
             <th>Stock</th>
+            <th data-columna-creado hidden>Creado</th>
             <th data-columna-acciones hidden>Acciones</th>
           </tr>
         </thead>
@@ -94,8 +95,20 @@
 
         <div class="campo">
           <label for="campo-categoria">Categoría</label>
-          <input type="text" id="campo-categoria" data-campo-categoria list="categorias-existentes" required />
-          <datalist id="categorias-existentes" data-datalist-categorias></datalist>
+          <!-- select nativo en vez de input+datalist: el datalist se ve
+               y se usa mal en navegadores de celular (la sugerencia no
+               aparece como una lista clara). Con "+ Nueva categoría…"
+               se puede seguir creando categorías que no existen aún. -->
+          <select id="campo-categoria" data-campo-categoria required>
+            <option value="" disabled selected>Selecciona una categoría</option>
+          </select>
+          <input
+            type="text"
+            id="campo-categoria-nueva"
+            data-campo-categoria-nueva
+            placeholder="Nombre de la nueva categoría"
+            hidden
+          />
         </div>
 
         <div class="campo">

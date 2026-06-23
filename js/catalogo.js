@@ -43,6 +43,7 @@ function pintarBarraSuperior() {
 function aplicarPermisosSegunRol() {
   document.querySelector("[data-abrir-agregar]").hidden = !esDueno;
   document.querySelector("[data-columna-costo]").hidden = !esDueno;
+  document.querySelector("[data-columna-creado]").hidden = !esDueno;
   document.querySelector("[data-columna-acciones]").hidden = !esDueno;
 }
 
@@ -92,6 +93,7 @@ function pintarTabla() {
       // dueño: así un Mostrador jamás recibe ese dato en el HTML,
       // ni siquiera escondido con CSS (que se podría inspeccionar).
       const celdaCosto = esDueno ? `<td class="celda-numero">${formatoMoneda(producto.costo)}</td>` : "";
+      const celdaCreado = esDueno ? `<td>${producto.fechaCreacion ?? "—"}</td>` : "";
 
       const celdaAcciones = esDueno
         ? `<td>${
@@ -120,6 +122,7 @@ function pintarTabla() {
           <td class="celda-numero">${precio}</td>
           ${celdaCosto}
           <td class="celda-numero">${producto.stock} ${producto.unidad}</td>
+          ${celdaCreado}
           ${celdaAcciones}
         </tr>
       `;
@@ -163,12 +166,30 @@ function eliminarProducto(id) {
 // Modal: agregar / editar producto
 // ============================================================
 
-function pintarDatalistCategorias() {
-  const datalist = document.querySelector("[data-datalist-categorias]");
-  // Set quita duplicados: si hay diez productos "Fruta", la sugerencia
-  // solo aparece una vez en el datalist.
+function pintarOpcionesCategorias() {
+  const select = document.querySelector("[data-campo-categoria]");
+  // Set quita duplicados: si hay diez productos "Fruta", la opción
+  // solo aparece una vez en el select.
   const categorias = [...new Set(productos.map((producto) => producto.categoria))];
-  datalist.innerHTML = categorias.map((categoria) => `<option value="${categoria}"></option>`).join("");
+
+  select.innerHTML = `
+    <option value="" disabled selected>Selecciona una categoría</option>
+    ${categorias.map((categoria) => `<option value="${categoria}">${categoria}</option>`).join("")}
+    <option value="__nueva__">+ Nueva categoría…</option>
+  `;
+}
+
+// Cuando eligen "+ Nueva categoría…" se muestra el input de texto para
+// escribirla; si elige una ya existente, el input se esconde y limpia.
+function manejarCambioCategoria() {
+  const select = document.querySelector("[data-campo-categoria]");
+  const inputNueva = document.querySelector("[data-campo-categoria-nueva]");
+  const esNueva = select.value === "__nueva__";
+  inputNueva.hidden = !esNueva;
+  if (esNueva) {
+    inputNueva.value = "";
+    inputNueva.focus();
+  }
 }
 
 function actualizarEtiquetasSegunTipo() {
@@ -192,22 +213,24 @@ function actualizarEtiquetasSegunTipo() {
 function limpiarFormulario() {
   document.querySelector("[data-form-producto]").reset();
   document.querySelector("[data-form-error]").textContent = "";
+  document.querySelector("[data-campo-categoria-nueva]").hidden = true;
+  document.querySelector("[data-campo-categoria-nueva]").value = "";
   actualizarEtiquetasSegunTipo();
 }
 
 function abrirModalAgregar() {
   productoEditandoId = null;
+  pintarOpcionesCategorias();
   limpiarFormulario();
   document.querySelector("[data-form-titulo]").textContent = "Agregar producto";
-  pintarDatalistCategorias();
   document.querySelector("[data-overlay-producto]").hidden = false;
 }
 
 function abrirModalEditar(id) {
   const producto = productos.find((item) => item.id === id);
   productoEditandoId = id;
+  pintarOpcionesCategorias();
   limpiarFormulario();
-  pintarDatalistCategorias();
 
   document.querySelector("[data-form-titulo]").textContent = "Editar producto";
   document.querySelector("[data-campo-nombre]").value = producto.nombre;
@@ -232,7 +255,11 @@ function manejarSubmitFormulario(evento) {
   evento.preventDefault();
 
   const nombre = document.querySelector("[data-campo-nombre]").value.trim();
-  const categoria = document.querySelector("[data-campo-categoria]").value.trim();
+  const valorCategoria = document.querySelector("[data-campo-categoria]").value;
+  const categoria =
+    valorCategoria === "__nueva__"
+      ? document.querySelector("[data-campo-categoria-nueva]").value.trim()
+      : valorCategoria.trim();
   const tipoVenta = document.querySelector("[data-campo-tipo]:checked").value;
   const precioVenta = Number.parseFloat(document.querySelector("[data-campo-precio]").value);
   const costo = Number.parseFloat(document.querySelector("[data-campo-costo]").value);
@@ -267,9 +294,35 @@ function manejarSubmitFormulario(evento) {
     // número), no el elemento mismo. La usamos para reemplazar esa
     // posición exacta con los datos nuevos.
     const indice = productos.findIndex((item) => item.id === productoEditandoId);
-    productos[indice] = { id: productoEditandoId, nombre, categoria, tipoVenta, precioVenta, costo, stock, unidad };
+    // Conserva la fecha de creación original: editar un producto no
+    // debe cambiar cuándo se creó.
+    const fechaCreacion = productos[indice].fechaCreacion;
+    productos[indice] = {
+      id: productoEditandoId,
+      nombre,
+      categoria,
+      tipoVenta,
+      precioVenta,
+      costo,
+      stock,
+      unidad,
+      fechaCreacion,
+    };
   } else {
-    productos.push({ id: crypto.randomUUID(), nombre, categoria, tipoVenta, precioVenta, costo, stock, unidad });
+    // Mismo formato YYYY-MM-DD que usan las ventas en almacen.js, para
+    // que se pueda ordenar/comparar como texto sin convertir nada.
+    const fechaCreacion = new Date().toISOString().slice(0, 10);
+    productos.push({
+      id: crypto.randomUUID(),
+      nombre,
+      categoria,
+      tipoVenta,
+      precioVenta,
+      costo,
+      stock,
+      unidad,
+      fechaCreacion,
+    });
   }
 
   guardarProductos(productos);
@@ -323,6 +376,8 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll("[data-campo-tipo]").forEach((radio) => {
     radio.addEventListener("change", actualizarEtiquetasSegunTipo);
   });
+
+  document.querySelector("[data-campo-categoria]").addEventListener("change", manejarCambioCategoria);
 
   document.addEventListener("keydown", (evento) => {
     if (evento.key === "Escape" && !document.querySelector("[data-overlay-producto]").hidden) {

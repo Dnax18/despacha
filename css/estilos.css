@@ -609,7 +609,10 @@ a {
   align-items: center;
   justify-content: center;
   padding: 16px;
-  z-index: 10;
+  /* Tiene que quedar por encima de .ticket (z-index: 15 en móvil,
+     donde el ticket es una barra fija inferior); si no, el ticket lo
+     tapaba y el popup no se podía usar. */
+  z-index: 20;
 }
 
 .overlay[hidden] {
