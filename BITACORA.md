@@ -73,16 +73,20 @@ Revisado y corregido en celular (390px) y laptop angosta (1280px), usando Chromi
 - `sw.js` (service worker): guarda copia de todos los archivos de la app; estrategia "internet primero, caché de respaldo" — usa la versión más reciente si hay conexión, y la última guardada si no la hay.
 - `js/registro-pwa.js` activa el service worker en las 6 pantallas.
 - Confirmado con el motor de instalabilidad de Chrome: **0 errores**. Confirmado que la app sigue funcionando (POS visible y operable) simulando estar sin internet, después de una primera visita.
+- **Instalación real confirmada en celular** (2026-06-22): se probó "Agregar a inicio" en un dispositivo físico y quedó instalada con el ícono de la "D" verde, abriendo en su propia ventana sin barra del navegador.
 
-**Pendiente de revisar:** no se ha probado la instalación real en un dispositivo (Android, iOS, Windows/Mac) — solo se verificó con las herramientas internas de Chrome en automatizado. La experiencia real de "Agregar a inicio" (ícono, ventana sin barra de navegador) no se ha visto con ojos humanos todavía.
+**Pendiente de revisar:** al instalarla y usarla en el celular real aparecieron ajustes de diseño/comportamiento por afinar en pantallas móviles — quedan como primer pendiente de la próxima sesión (ver sección 5).
 
 ---
 
 ## 5. Pendientes para la próxima sesión
 
-- [ ] Probar la instalación real de la PWA en al menos un celular y una laptop.
+> La sesión de mañana arranca con el primer punto: ajustes de diseño/comportamiento
+> en móvil, detectados al usar la PWA ya instalada en un celular real.
+
+- [ ] **Primer pendiente de mañana:** afinar ajustes de móvil encontrados al probar la app instalada en un celular real (pendiente anotar el detalle específico de cada ajuste al retomar).
 - [ ] Probar el flujo completo (POS, catálogo, inventario, dashboard, histórico) en un navegador distinto a Chrome (Safari es importante si el cliente usa iPhone/iPad).
-- [ ] Subir el proyecto a GitHub (repo local listo, falta el push — ver sección de control de versiones más abajo).
+- [ ] Probar la instalación real también en una laptop/escritorio (ya se confirmó en celular).
 - [ ] Decidir si se cotiza la integración con una terminal de pago real para el cobro con tarjeta (por ahora es solo registro contable, decisión en pausa).
 - [ ] Revisar con calma el flujo de "editar/reembolsar venta" en un escenario real con el cliente, ya que es la funcionalidad más nueva y más delicada (toca inventario y dinero).
 - [ ] Pantalla de configuración para cambiar `--marca`, logo y nombre del negocio sin editar código — hoy la tematización por cliente se hace a mano en los archivos.
@@ -92,15 +96,5 @@ Revisado y corregido en celular (390px) y laptop angosta (1280px), usando Chromi
 
 ## 6. Control de versiones
 
-- Repositorio git local: inicializado el 2026-06-22, primer commit hecho (26 archivos).
-- Repo remoto en GitHub: pendiente de crear y subir (lo hace el usuario — ver instrucciones abajo).
-
-### Cómo subirlo a GitHub (lo que falta hacer)
-
-1. Crear un repositorio vacío en GitHub.com (sin README, sin .gitignore — ya existen aquí).
-2. En esta carpeta, correr:
-   ```
-   git remote add origin https://github.com/TU-USUARIO/NOMBRE-DEL-REPO.git
-   git branch -M main
-   git push -u origin main
-   ```
+- Repositorio git local: inicializado el 2026-06-22.
+- Repo remoto en GitHub: **subido y sincronizado** — https://github.com/Dnax18/despacha (rama `main`, `git status` confirma "up to date with 'origin/main'").
