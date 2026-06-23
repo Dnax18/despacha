@@ -1213,14 +1213,32 @@ a {
      todo lo siguiente a la fila de abajo. */
   .barra-superior.pos-barra {
     flex-wrap: wrap;
+    padding: 10px 14px;
   }
 
+  /* Logo+nombre y rol+reloj deben quedar en la misma primera fila,
+     pero juntos no caben con su tamaño de escritorio en una pantalla
+     de celular (sumaban más ancho que el viewport y el navegador
+     rompía la fila). Se encogen para que sí entren los dos. */
   .barra-superior.pos-barra .barra-superior__marca {
     order: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    gap: 6px;
+    font-size: 1rem;
+  }
+
+  .barra-superior.pos-barra .barra-superior__marca span:not(.barra-superior__logo) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .barra-superior.pos-barra .pos-barra__derecha {
     order: 2;
+    flex-shrink: 0;
+    gap: 8px;
+    font-size: 0.8rem;
   }
 
   .barra-superior.pos-barra .pos-barra__busqueda {
@@ -1232,6 +1250,14 @@ a {
   .barra-superior.pos-barra .barra-nav {
     order: 4;
     flex-basis: 100%;
+    /* La franja gris (--fondo) está pensada para cuando hay varios
+       links y necesitan un carril visible para deslizarse. Con pocos
+       links (p. ej. Mostrador, que solo ve Cobrar/Catálogo) esa franja
+       se queda casi vacía y se ve como un bloque gris sin sentido.
+       Se quita el fondo y se centra el contenido en su lugar. */
+    background-color: transparent;
+    padding: 0;
+    justify-content: center;
   }
 
   /* Excepción index.html (selección de rol): ahí el header no tiene
@@ -1252,27 +1278,31 @@ a {
     display: none; /* Chrome/Safari/Edge/WebView de la PWA */
   }
 
-  /* POS — categorías: en pantallas angostas el botón circular se
-     veía como una "v" suelta sin contexto (borde casi invisible).
-     Lo agrandamos a una pastilla con borde de marca bien marcado,
-     para que se note que es un control y no un símbolo flotando. */
+  /* POS — categorías: en móvil el botón de colapsar no aporta
+     (la lista de categorías es corta y cabe deslizándose), y se veía
+     como una "v" suelta sin contexto. Se quita el botón y la lista
+     queda siempre visible. */
   .categorias {
     padding: 10px 16px;
   }
 
   .categorias__toggle {
-    width: auto;
-    height: 38px;
-    padding: 0 16px;
-    border-radius: 999px;
-    border: 1.5px solid var(--marca);
-    background-color: var(--superficie);
-    font-size: 1.1rem;
+    display: none;
   }
 
   /* POS — grid de productos: 2 columnas fijas en vez de que
      auto-fill decida cuántas caben (a veces dejaba 1 sola). */
   .grid-productos {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Si el catálogo tiene un número impar de productos, el último
+     queda solo en la columna izquierda con un hueco vacío a la
+     derecha. Centrarlo a la mitad del ancho para que la fila final
+     se vea balanceada en vez de descuadrada. */
+  .grid-productos > *:last-child:nth-child(odd) {
+    grid-column: span 2;
+    max-width: calc(50% - 7px);
+    margin: 0 auto;
   }
 }
