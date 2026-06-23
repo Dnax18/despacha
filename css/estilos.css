@@ -1277,7 +1277,13 @@ a {
        Se quita el fondo y se centra el contenido en su lugar. */
     background-color: transparent;
     padding: 0;
-    justify-content: center;
+    /* "safe center": centra cuando todo cabe (Mostrador, 2 links),
+       pero si no cabe y hace falta deslizar (Dueño, 5 links), se
+       comporta como alineado al inicio en vez de centrar — centrar
+       un contenedor con overflow deja contenido atrapado fuera de
+       la pantalla e imposible de alcanzar con el dedo (eso hacía
+       desaparecer "Cobrar" para Dueño). */
+    justify-content: safe center;
   }
 
   /* Excepción index.html (selección de rol): ahí el header no tiene
